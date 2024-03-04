@@ -86,6 +86,21 @@ typedef enum {
 /* Forward declarations */
 static bool q_show(int vlevel);
 
+void q_shuffle(struct list_head *head);
+
+static bool do_shuffle(int argc, char *argv[])
+{
+    if (argc != 1) {
+        report(1, "%s takes no arguments", argv[0]);
+        return false;
+    }
+
+    q_shuffle(current->q);
+    q_show(3);
+    return true;
+}
+
+
 static bool do_free(int argc, char *argv[])
 {
     if (argc != 1) {
@@ -1054,6 +1069,7 @@ static void console_init()
                 "");
     ADD_COMMAND(reverseK, "Reverse the nodes of the queue 'K' at a time",
                 "[K]");
+    ADD_COMMAND(shuffle, "Shuffle queue", "");
     add_param("length", &string_length, "Maximum length of displayed string",
               NULL);
     add_param("malloc", &fail_probability, "Malloc failure probability percent",

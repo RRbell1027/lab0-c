@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "harness.h"
 #include "queue.h"
 
 /* Notice: sometimes, Cppcheck would find the potential NULL pointer bugs,
@@ -348,4 +349,25 @@ int q_merge(struct list_head *head, bool descend)
     list_splice_tail(&qchain2, qchain1);
 
     return size;
+}
+
+void q_shuffle(struct list_head *head)
+{
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+
+    int size = q_size(head);
+    struct list_head *old;
+    for (int i = size; i > 1; i--) {
+        old = head;
+        int r = rand() / (RAND_MAX / (i - 1) + 1) + 1;
+        while (r > 0) {
+            old = old->next;
+            r--;
+        }
+        struct list_head *tmp = old->prev;
+        list_del(old);
+        list_move(head->prev, tmp);
+        list_add_tail(old, head);
+    }
 }

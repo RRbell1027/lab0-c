@@ -414,6 +414,8 @@ static bool do_web(int argc, char *argv[])
     return true;
 }
 
+
+
 /* Initialize interpreter */
 void init_cmd()
 {
