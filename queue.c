@@ -4,6 +4,7 @@
 
 #include "harness.h"
 #include "queue.h"
+#include "sort_impl.h"
 
 /* Notice: sometimes, Cppcheck would find the potential NULL pointer bugs,
  * but some of them cannot occur. You can suppress them by adding the
@@ -229,29 +230,44 @@ void q_reverseK(struct list_head *head, int k)
     list_splice(&rev, head);
 }
 
+int compare(void *priv, const struct list_head *a, const struct list_head *b)
+{
+    if (a == b)
+        return 0;
+
+    const char *av = list_entry(a, element_t, list)->value;
+    const char *bv = list_entry(b, element_t, list)->value;
+
+    int res = strcmp(av, bv);
+
+    if (priv)
+        *((int *) priv) += 1;
+
+    return res;
+}
+
+int sort_algor_id = 0;
 void q_sort(struct list_head *head, bool descend)
 {
-    if (!head || list_empty(head) || list_is_singular(head))
-        return;
-
-    struct list_head *fast = head->next, *slow = head;
-    for (; fast != head && fast->next != head; fast = fast->next->next)
-        slow = slow->next;
-
-    LIST_HEAD(left);
-    list_cut_position(&left, head, slow);
-
-    q_sort(&left, descend);
-    q_sort(head, descend);
-
-    queue_contex_t left_queue = {.q = &left};
-    queue_contex_t right_queue = {.q = head};
-
-    LIST_HEAD(q_head);
-    list_add_tail(&right_queue.chain, &q_head);
-    list_add_tail(&left_queue.chain, &q_head);
-
-    q_merge(&q_head, descend);
+    int count;
+    switch (sort_algor_id) {
+    case 0:
+        printf("list_sort\n");
+        list_sort(&count, head, compare);
+        break;
+    case 1:
+        printf("mergesort\n");
+        mergesort(&count, head, compare);
+        break;
+    case 2:
+        printf("timsort\n");
+        timsort(&count, head, compare);
+    default:
+        printf("select sorting failed");
+        break;
+    }
+    if (descend)
+        q_reverse(head);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to

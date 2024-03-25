@@ -414,7 +414,18 @@ static bool do_web(int argc, char *argv[])
     return true;
 }
 
+extern int sort_algor_id;
 
+static bool do_changeS(int argc, char *argv[])
+{
+    if (argc != 2) {
+        report(1, "%s takes one arguments", argv[0]);
+        return false;
+    }
+
+    get_int(argv[1], &sort_algor_id);
+    return true;
+}
 
 /* Initialize interpreter */
 void init_cmd()
@@ -433,6 +444,7 @@ void init_cmd()
     ADD_COMMAND(log, "Copy output to file", "file");
     ADD_COMMAND(time, "Time command execution", "cmd arg ...");
     ADD_COMMAND(web, "Read commands from builtin web server", "[port]");
+    ADD_COMMAND(changeS, "Change the algorithm of sorting", NULL);
     add_cmd("#", do_comment_cmd, "Display comment", "...");
     add_param("simulation", &simulation, "Start/Stop simulation mode", NULL);
     add_param("verbose", &verblevel, "Verbosity level", NULL);
